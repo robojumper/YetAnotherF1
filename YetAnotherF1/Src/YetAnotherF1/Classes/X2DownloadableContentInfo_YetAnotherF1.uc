@@ -21,11 +21,6 @@ static exec function YAF1_OnF1Press()
 
 static exec function YAF1_OnF1Release()
 {
-	// We don't (!) want this check here. Our input overrides from earlier versions
-	// either aren't here anymore, so this one can't get called, or replace the base
-	// game input bindings, preventing the Input delegates thing from working.
-	// In any case, there's no chance that any events can fire twice!
-	// if (Function'XComGame.UIScreenStack.SubscribeToOnInput' == none)
 	PushF1Screen();
 }
 
@@ -36,8 +31,6 @@ static exec function YAF1_OnLeftThumbPress()
 
 static exec function YAF1_OnLeftThumbRelease()
 {
-	// See above
-	// if (Function'XComGame.UIScreenStack.SubscribeToOnInput' == none)
 	PushF1Screen();
 }
 
@@ -143,12 +136,4 @@ function CountPanels(UIPanel Panel, out int count)
 		if (Panel.ChildPanels[i] != Panel)
 			CountPanels(Panel.ChildPanels[i], count);
 	}
-}
-
-exec function SimpleAssign()
-{
-	local int i;
-	i = 0;
-	i = 42;
-	i = 43;
 }

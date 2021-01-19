@@ -188,6 +188,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	PassivesHeader.SetHTMLText(class'UIUtilities_Text'.static.StyleText(m_strPassives, eUITextStyle_Tooltip_StatLabel));
 
 	Passives = Spawn(class'UIEffectList', AbilityEffectContainer);
+	Passives.bAnimateOnInit = false;
 	// 40 is hardcoded padding + header height in effect tooltip
 	Passives.InitEffectList('', '', 10 + (Width + horizontalPadding) / 2, 40, columnWidth - 20, 9999, 9999, 9999, RealizeLayout);
 
@@ -200,12 +201,14 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	Buffs.MaxHeight = 9999;
 	Buffs.Width = Width - horizontalMargin - BuffDebuffStack.fixX;
 	Buffs.InitBonusesAndPenalties('TooltipEnemyBonuses',,true, true, , , true);
+	Buffs.ItemList.bAnimateOnInit = false;
 //	Buffs.BGBox.SetColor("00FF00");
 	
 	Debuffs = Spawn(class'UITacticalHUD_BuffsTooltip', AbilityEffectContainer);
 	Debuffs.MaxHeight = 9999;
 	Debuffs.Width = Width - horizontalMargin - BuffDebuffStack.fixX;
 	Debuffs.InitBonusesAndPenalties('TooltipEnemyPenalties',,false, true, , , true);
+	Debuffs.ItemList.bAnimateOnInit = false;
 //	Debuffs.BGBox.SetColor("00FF00");
 
 	BuffDebuffStack.Add(Buffs);
@@ -217,6 +220,7 @@ simulated function InitScreen(XComPlayerController InitController, UIMovie InitM
 	AbilitiesHeader.SetHTMLText(class'UIUtilities_Text'.static.StyleText(class'XLocalizedData'.default.TacticalTextAbilitiesHeader, eUITextStyle_Tooltip_StatLabel));
 
 	Abilities = Spawn(class'UIEffectList', AbilityEffectContainer);
+	Abilities.bAnimateOnInit = false;
 	// 40 is hardcoded padding + header height in effect tooltip
 	Abilities.InitEffectList('', '', horizontalMargin + 10, 40, columnWidth - 20, 9999, 9999, 9999, RealizeLayout);
 
@@ -640,7 +644,7 @@ simulated function WeaponPanelSizeRealized(YAF1_UIWeaponPanel ChangedPanel)
 simulated function WeaponTooltipSizeRealized()
 {
 	WeaponTooltip.OnChildPanelSizeRealized();
-	RealizeLayout();
+	RealizeWeaponTooltip();
 }
 
 simulated function RealizeLayout()
@@ -655,7 +659,6 @@ simulated function RealizeLayoutInternal()
 	local float lowestPanel;
 	local float diff;
 	local float PassivesHeight;
-	local float ConnX, ConnY;
 
 	//bNeedsRealizeLayout = false;
 
@@ -704,24 +707,7 @@ simulated function RealizeLayoutInternal()
 	
 	AbilityEffectMask.SetHeight(PrimaryWeaponPanel.Y - AbilityEffectContainer.Y - 10);
 
-	Connector1.SetVisible(WeaponTooltip.bIsVisible);
-	Connector2.SetVisible(WeaponTooltip.bIsVisible);
-	Connector3.SetVisible(WeaponTooltip.bIsVisible);
-
-	if (WeaponTooltip.bIsVisible)
-	{
-		Connector1.SetSize(WeaponTooltip.Width - WeaponTooltip.PADDING_LEFT + 5, 2);
-		Connector1.SetPosition(-Connector1.Width - 5, WeaponTooltipContainer.Y - WeaponTooltip.Container.Height + 38);
-
-		ConnX = PrimaryWeaponPanel.GetConnectorX() + PrimaryWeaponPanel.X;
-		ConnY = PrimaryWeaponPanel.GetConnectorY() + PrimaryWeaponPanel.Y;
-
-		Connector3.SetSize(ConnX + 5, 2);
-		Connector3.SetPosition(ConnX - Connector3.Width, ConnY);
-
-		Connector2.SetSize(2, Connector3.Y - Connector1.Y);
-		Connector2.SetPosition(-5, ConnY - Connector2.Height);
-	}
+	RealizeWeaponTooltip();
 
 	diff = AbilityEffectMask.Height - AbilityEffectContainer.Height;
 	Scrollbar.NotifyValueChange(AbilityEffectContainer.SetY, ContainerRestPos, ContainerRestPos + Min(diff, 0));
@@ -734,6 +720,30 @@ simulated function RealizeLayoutInternal()
 	else
 	{
 		Scrollbar.Show();
+	}
+}
+
+simulated function RealizeWeaponTooltip()
+{
+	local float ConnX, ConnY;
+
+	Connector1.SetVisible(WeaponTooltip.bIsVisible);
+	Connector2.SetVisible(WeaponTooltip.bIsVisible);
+	Connector3.SetVisible(WeaponTooltip.bIsVisible);
+
+	if (WeaponTooltip.bIsVisible && Connector1 != none)
+	{
+		Connector1.SetSize(WeaponTooltip.Width - WeaponTooltip.PADDING_LEFT + 5, 2);
+		Connector1.SetPosition(-Connector1.Width - 5, WeaponTooltipContainer.Y - WeaponTooltip.Container.Height + 38);
+
+		ConnX = PrimaryWeaponPanel.GetConnectorX() + PrimaryWeaponPanel.X;
+		ConnY = PrimaryWeaponPanel.GetConnectorY() + PrimaryWeaponPanel.Y;
+
+		Connector3.SetSize(ConnX + 5, 2);
+		Connector3.SetPosition(ConnX - Connector3.Width, ConnY);
+
+		Connector2.SetSize(2, Connector3.Y - Connector1.Y);
+		Connector2.SetPosition(-5, ConnY - Connector2.Height);
 	}
 }
 
@@ -962,7 +972,7 @@ simulated function OnToggleButtonClicked(UIImage ClickedImage)
 	class'YAF1_Config'.static.StaticSaveConfig();
 
 	SetLayout(bActuallyFriendly, XComGameState_Unit(TargetState) != none && XComGameState_Unit(TargetState).IsSoldier());
-	RealizeLayout();
+	SetColors();
 }
 
 event Tick(float DeltaTime)
