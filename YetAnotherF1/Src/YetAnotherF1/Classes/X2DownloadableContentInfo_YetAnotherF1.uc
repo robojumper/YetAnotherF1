@@ -12,29 +12,29 @@ class X2DownloadableContentInfo_YetAnotherF1 extends X2DownloadableContentInfo;
 
 // weak ref to the screen
 // config is just so we can write to it via default.
-var config string screen_path;
+var config string ScreenPath;
 
-static exec function YAF1_OnF1Press()
+var localized array<string> Instructions;
+
+static event OnPostTemplatesCreated()
 {
-	
+	local YAF1_Config CDO;
+
+	CDO = YAF1_Config(class'XComEngine'.static.GetClassDefaultObject(class'YAF1_Config'));
+
+	if (CDO.F1Keys.Length == 0)
+	{
+		CDO.F1Keys.AddItem(class'UIUtilities_Input'.const.FXS_BUTTON_L3);
+		CDO.F1Keys.AddItem(class'UIUtilities_Input'.const.FXS_KEY_F1);
+	}
+
+	CDO.Instructions = default.Instructions;
+
+	class'YAF1_Config'.static.StaticSaveConfig();
+
 }
 
-static exec function YAF1_OnF1Release()
-{
-	PushF1Screen();
-}
-
-static exec function YAF1_OnLeftThumbPress()
-{
-	
-}
-
-static exec function YAF1_OnLeftThumbRelease()
-{
-	PushF1Screen();
-}
-
-static exec function bool PushF1Screen()
+static exec function bool YAF1_PushF1Screen()
 {
 	local XComTacticalInput TI;
 	local XComGameStateVisualizationMgr VisMgr;
@@ -99,24 +99,24 @@ static function YAF1_UIUnitInfo GetScreen()
 	local XComPresentationLayerBase Pres;
 
 	Pres = `PRESBASE;
-	TempScreen = YAF1_UIUnitInfo(FindObject(default.screen_path, class'YAF1_UIUnitInfo'));
+	TempScreen = YAF1_UIUnitInfo(FindObject(default.ScreenPath, class'YAF1_UIUnitInfo'));
 	if (Pres != none && TempScreen == none)
 	{
 		TempScreen = Pres.Spawn(class'YAF1_UIUnitInfo', Pres);
 		TempScreen.InitScreen(XComPlayerController(Pres.Owner), Pres.Get2DMovie());
 		TempScreen.Movie.LoadScreen(TempScreen);
-		default.screen_path = PathName(TempScreen);
+		default.ScreenPath = PathName(TempScreen);
 	}
 	return TempScreen;
 }
 
 
-exec function SetControllerEnabled(bool bActive)
+exec function YAF1_SetControllerEnabled(bool bActive)
 {
 	`XPROFILESETTINGS.Data.ActivateMouse(!bActive);
 }
 
-exec function PrintScreenPanelInfo()
+exec function YAF1_PrintScreenPanelInfo()
 {
 	local UIPanel ParentPanel;
 	local int iTotalPanels;

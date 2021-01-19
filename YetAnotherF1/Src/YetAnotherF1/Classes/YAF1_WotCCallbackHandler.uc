@@ -1,19 +1,19 @@
-class YAF1_WotCCallbackHandler extends Object;
+class YAF1_WotCCallbackHandler extends Object config(UI);
 
-function bool CHOnInput(int iInput, int ActionMask)
+var config bool bDontEatL3;
+
+function bool CHOnInputFOrScreen(UIScreen Screen, int iInput, int ActionMask)
 {
-	if (iInput == class'UIUtilities_Input'.const.FXS_BUTTON_L3)
+	if (ActionMask == class'UIUtilities_Input'.const.FXS_ACTION_RELEASE && class'YAF1_Config'.default.F1Keys.Find(iInput) != INDEX_NONE)
 	{
-		if (ActionMask == class'UIUtilities_Input'.const.FXS_ACTION_RELEASE)
-		{
-			class'X2DownloadableContentInfo_YetAnotherF1'.static.PushF1Screen();
-		}
-		// Eat all the events -- otherwise they'll fire the tactical info screen
+		class'X2DownloadableContentInfo_YetAnotherF1'.static.YAF1_PushF1Screen();
 		return true;
 	}
-	if (ActionMask == class'UIUtilities_Input'.const.FXS_ACTION_RELEASE && iInput == class'UIUtilities_Input'.const.FXS_KEY_F1)
+
+	if (iInput == class'UIUtilities_Input'.const.FXS_BUTTON_L3)
 	{
-		return class'X2DownloadableContentInfo_YetAnotherF1'.static.PushF1Screen();
+		// Eat all the events -- otherwise they'll fire the tactical info screen
+		return true;
 	}
 	return false;
 }

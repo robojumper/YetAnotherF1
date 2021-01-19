@@ -1070,6 +1070,11 @@ simulated function bool OnUnrealCommand(int cmd, int arg)
 			}
 			break;
 		default:
+			if (class'YAF1_Config'.default.F1Keys.Find(cmd) != INDEX_NONE)
+			{
+				CloseScreen();
+				break;
+			}
 			bHandled = false;
 			break;
 	}

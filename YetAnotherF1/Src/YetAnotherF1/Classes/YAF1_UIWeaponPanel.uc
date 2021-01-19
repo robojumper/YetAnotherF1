@@ -243,7 +243,7 @@ simulated function PopulateWeaponInfo(XComGameState_Item ItemState, X2WeaponTemp
 				if (SourceAbilityState.SourceWeapon == ItemState.GetReference())
 				{
 					DummyShredder = new class'X2Effect_Shredder';
-					Bonus = DummyShredder.GetBonusEffectDamageValue(SourceAbilityState, ItemState, EmptyRef);
+					Bonus = DummyShredder.GetBonusEffectDamageValue(SourceAbilityState, OwnerUnit, ItemState, EmptyRef);
 					break;
 				}
 			}
