@@ -272,7 +272,6 @@ simulated function PopulateData(StateObjectReference Target)
 	local ECharStatType StatType;
 	local string StatString, DiffString;
 	local bool MayCensorStat;
-	local X2SoldierClassTemplate SCTemplate;
 
 	local ArmorMitigationResults Armor;
 
@@ -300,7 +299,6 @@ simulated function PopulateData(StateObjectReference Target)
 	Unit = XGUnit(History.GetVisualizer(Target.ObjectID));
 	// even though we shouldn't interrupt anything, let's be safe
 	UnitState = Unit.GetVisualizedGameState();
-	SCTemplate = UnitState.GetSoldierClassTemplate();
 
 	DescText = UnitState.GetMyTemplate().strAcquiredText;
 	// HAX: It's used by SparkSoldier, and doesn't contain any relevant tactical info. Noticed that way too late
@@ -337,9 +335,9 @@ simulated function PopulateData(StateObjectReference Target)
 
 	SetLayout(Unit.IsFriendly(PC), UnitState.IsSoldier());
 
-	if (SCTemplate != none)
+	if (UnitState.IsSoldier())
 	{
-		SCImage.LoadImage(SCTemplate.IconImage);
+		SCImage.LoadImage(UnitState.GetSoldierClassIcon());
 	}
 
 	
